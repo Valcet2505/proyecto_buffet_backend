@@ -25,12 +25,12 @@ model products {
   price       Int
   image       String?
   orderItems  order_product[]
-  category  product_category[]
+  Category  product_category[]
 
   @@map("products")
 }
 
-model category {
+model Category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
   products   product_category[]
@@ -42,7 +42,7 @@ model product_category {
   product_id   Int
   category_id  Int
   products     products   @relation(fields: [product_id], references: [id])
-  categories   category @relation(fields: [category_id], references: [id])
+  Category   Category @relation(fields: [category_id], references: [id])
 
   @@id([product_id, category_id])
   @@map("product_category")
