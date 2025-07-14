@@ -11,9 +11,7 @@ const app = express();
 // Middleware
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://proyecto-buffet-backend.onrender.com',
-  'https://proyecto-buffet-frontend.vercel.app/',
-  'https://proyecto-buffet-frontend.vercel.app'
+  'https://proyecto-buffet-backend.onrender.com'
 ];
 
 app.use(cors({
