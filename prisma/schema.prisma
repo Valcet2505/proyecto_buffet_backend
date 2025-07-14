@@ -13,8 +13,9 @@ model user {
   email    String  @unique
   password String
   role     String
-
   orders   orders[]
+
+  @@map("user")
 }
 
 model products {
@@ -24,23 +25,27 @@ model products {
   price       Int
   image       String?
   orderItems  order_product[]
-  categories  product_category[]
+  category  product_category[]
+
+  @@map("products")
 }
 
-model categories {
+model category {
   id         Int      @id @default(autoincrement())
   name       String   @unique
   products   product_category[]
+
+  @@map("category")
 }
 
 model product_category {
   product_id   Int
   category_id  Int
-
-  products   products   @relation(fields: [product_id], references: [id])
-  categories categories @relation(fields: [category_id], references: [id])
+  products     products   @relation(fields: [product_id], references: [id])
+  categories   category @relation(fields: [category_id], references: [id])
 
   @@id([product_id, category_id])
+  @@map("product_category")
 }
 
 model orders {
@@ -48,21 +53,22 @@ model orders {
   user_id   Int
   date      String
   status    String
-
   user      user    @relation(fields: [user_id], references: [id])
   items     order_product[]
   payments  payments[]
+
+  @@map("orders")
 }
 
 model order_product {
   order_id   Int
   product_id Int
   quantity   Int
-
   orders     orders   @relation(fields: [order_id], references: [id])
   products   products @relation(fields: [product_id], references: [id])
 
   @@id([order_id, product_id])
+  @@map("order_product")
 }
 
 model payments {
@@ -72,6 +78,7 @@ model payments {
   method    String
   status    String
   date      String
-
   orders    orders  @relation(fields: [order_id], references: [id])
+
+  @@map("payments")
 }
