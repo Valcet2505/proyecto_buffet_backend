@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,85 +7,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+model user {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  role     String
 
-  orders Order[]
+  orders   orders[]
 }
 
-model Category {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-}
-
-model Product {
-  id          String   @id @default(cuid())
+model products {
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
-  price       Float
+  price       Int
   image       String?
-  stock       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  categories Category[]
-  orderItems OrderItem[]
+  orderItems  order_product[]
+  categories  product_category[]
 }
 
-model Order {
-  id            String      @id @default(cuid())
-  orderNumber   Int         @unique
-  userId        String
-  status        OrderStatus @default(PENDING)
-  total         Float
-  paymentId     String?
-  paymentStatus PaymentStatus @default(PENDING)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  user      User        @relation(fields: [userId], references: [id])
-  orderItems OrderItem[]
+model categories {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  products   product_category[]
 }
 
-model OrderItem {
-  id        String @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
+model product_category {
+  product_id   Int
+  category_id  Int
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  products   products   @relation(fields: [product_id], references: [id])
+  categories categories @relation(fields: [category_id], references: [id])
+
+  @@id([product_id, category_id])
 }
 
-enum Role {
-  USER
-  ADMIN
+model orders {
+  id        Int     @id @default(autoincrement())
+  user_id   Int
+  date      String
+  status    String
+
+  user      user    @relation(fields: [user_id], references: [id])
+  items     order_product[]
+  payments  payments[]
 }
 
-enum OrderStatus {
-  PENDING
-  PREPARING
-  READY
-  COMPLETED
-  CANCELLED
+model order_product {
+  order_id   Int
+  product_id Int
+  quantity   Int
+
+  orders     orders   @relation(fields: [order_id], references: [id])
+  products   products @relation(fields: [product_id], references: [id])
+
+  @@id([order_id, product_id])
 }
 
-enum PaymentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  CANCELLED
-} 
+model payments {
+  id        Int     @id @default(autoincrement())
+  order_id  Int
+  amount    Int
+  method    String
+  status    String
+  date      String
+
+  orders    orders  @relation(fields: [order_id], references: [id])
+}
