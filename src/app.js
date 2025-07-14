@@ -9,9 +9,22 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const app = express();
 
 // Middleware
-app.use(cors({ 
-  origin: 'http://localhost:5173', 
-  credentials: true 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://proyecto-buffet-backend.onrender.com'
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // Permitir peticiones sin origin (como Postman o curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true
 }));
 app.use(express.json());
 
